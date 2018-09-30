@@ -10,5 +10,6 @@ RUN pip3 install -r /env/requirements.txt -i http://mirrors.aliyun.com/pypi/simp
 
 WORKDIR /workspace
 
-#CMD ["/bin/bash", "-c", "python3 manage.py runserver"]
-CMD ["/bin/bash", "-c", "python3"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

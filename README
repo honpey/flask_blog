@@ -1,0 +1,7 @@
+BUILD
+
+$ docker build -t flask-blog .
+
+RUN
+
+$ docker run -ti --rm --name flask-blog -p 5000:5000 -v `pwd`/workspace/:/workspace -v `pwd`/database/:/database flask-blog
