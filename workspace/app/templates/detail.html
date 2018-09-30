@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ entry.title }}{% endblock %}
+
+{% block content_title %}{{ entry.title }}{% endblock %}
+
+{% block extra_nav %}
+  {% if session.logged_in %}
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('edit', slug=entry.slug) }}">Edit entry
+      </a>
+    </li>
+
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="container" id="detailContent">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <p class="post-meta">
+          "Created by "
+          <a href="#"> KorenH </a>
+          "on" {{ entry.timestamp.strftime('%m/%d/%Y at %H:%M%p') }}
+        </p>
+
+        {{ entry.html_content }}
+      </div>
+    </div>
+  </div>
+{% endblock %}

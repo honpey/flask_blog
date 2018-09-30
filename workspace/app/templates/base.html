@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Blog</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1 shrink-to-fit=no">
+    <meta name="robots" content="noindex">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" {{ url_for('static', filename='css/bootstrap.min.css') }} " integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <!-- Custom Styles -->
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/clean-blog.min.css') }}" />
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/clean-blog-cust.min.css') }}" />
+
+    <!-- Fonts -->
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }} " rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/lora.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/opensans.css') }}" rel="stylesheet" type="text/css">
+    {% block extra_head %}{% endblock %}
+  </head>
+
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav" role="navigation">
+      <div class="container">
+
+        <!-- Toggler, minimize navigation bar to one icon when screen width is not enough -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Always show brand, when navbar collapsed, it locates to the right -->
+        <a class="navbar-brand" href="{{ url_for('index') }}">Blog</a>
+
+        <div class="collapse navbar-collapse" id="navbarToggler">
+          <ul class="navbar-nav ml-auto">
+            {% if session.logged_in %}
+              {% block extra_nav %} {% endblock %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('drafts') }}">Drafts</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('create') }}">Create Entry</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">Log out</a>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('login') }}">Log in</a>
+              </li>
+            {% endif %}
+
+            {% block search_bar %}
+              <form action="{{ url_for('index') }}" class="form-inline" id="search-form" method="get" role="search">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q" value="{% if search %}{{ search }}{% endif %}">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </form>
+            {% endblock %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Alert Bar -->
+    <div class="container" id="alertBar">
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="alert alert-{{ category }} alert-dismissable">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          <p>{{ message }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Page header -->
+    {% block page_header %}
+      <header class="masthead" style="background-image: url( {{ url_for('static', filename='img/home-bg.png') }} )">
+        <div class="overlay"></div>
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+              <div class="site-heading">
+                <h1>{% block content_title %}{% endblock %}</h1>
+                <span class="subheading">Blog written by KorenH</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+    {% endblock %}
+
+    <!-- Content -->
+    {% block content %}{% endblock %}
+
+    <hr>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted">Copyright © HKSM195 Website 2017</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap Javascripts -->
+
+
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+
+
+    <!-- <script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.js') }}"</script>
+
+    <script type="text/javascript">
+     var bootstrapButton = $.fn.button.noConflict() // return $.fn.button to previously assigned value
+     $.fn.bootstrapBtn = bootstrapButton            // give $().bootstrapBtn the Bootstrap functionality
+    </script>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+
+    <!-- Custom Javascripts -->
+    <script src="{{ url_for('static', filename='js/clean-blog.js') }}"></script>
+    <script type="text/javascript">
+     $(".alert-success").fadeTo(2000, 500).slideUp(500, function(){
+       $(".alert-success").slideUp(500);
+     });
+    </script>
+    {% block extra_scripts %}{% endblock %}
+
+  </body>
+</html>

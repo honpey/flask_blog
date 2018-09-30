@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Blog entries{% endblock %}
+
+{% block content_title %}{% if search %}Search "{{ search }}"{% else %}濛濛小姐姐的小屋{% endif %}{% endblock %}
+
+{% block content %}
+
+  <div class="row">
+    <div class="col-lg-9 col-md-10 mx-auto">
+      {% for entry in object_list %}
+        {% if search %}
+          {% set entry = entry.entry %}
+        {% endif %}
+        <div class="post-preview">
+          <a href="{% if entry.published %}{{ url_for('detail', slug=entry.slug) }}{% else %}{{ url_for('edit', slug=entry.slug) }}{% endif %}">
+            <h2 class="post-title">
+              {{ entry.title }}
+            </h2>
+            <h3>
+            </h3>
+          </a>
+          <p class="post-meta">
+            "Created by "
+            <a href="#"> KorenH </a>
+            "on " {{ entry.timestamp.strftime('%m/%d/%Y at %H:%M%p') }}
+          </p>
+        </div>
+        <hr>
+      {% else %}
+        <p>No entries have been created yet.</p>
+      {% endfor %}
+      {% include "includes/pagination.html" %}
+{% endblock %}

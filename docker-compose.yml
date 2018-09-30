@@ -1,0 +1,14 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    container_name: flask_blog
+    image:          im/flask_blog
+    ports:
+      - 5000:5000
+    volumes:
+      - ./workspace:/workspace
+      - ./database:/database
+    stdin_open: true
+    tty: true

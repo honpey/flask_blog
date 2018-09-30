@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+
+  <link href="{{ url_for('static', filename='css/bootstrap-markdown-editor.css') }}" rel="stylesheet" type="text/css">
+
+  <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block title %}Create entry{% endblock %}
+
+{% block content_title %}Create entry{% endblock %}
+
+{% block content %}
+  <div class="container">
+
+  <form action="{% block form_action %}{{ url_for('create') }}{% endblock %}" class="form-horizontal" method="post">
+    <div class="form-group">
+      <label for="title" class="col-sm-2 control-label">Title</label>
+      <div class="col-sm-10">
+        <input class="form-control" id="title" name="title" type="text" value="{{ entry.title }}">
+      </div>
+    </div>
+
+    <!-- Textarea, Markdown -->
+    <div class="form-group">
+      <label for="Content" class="col-sm-2 control-label">Content</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="myEditor" name="text" style="height: 300px;">{{ entry.content }}</textarea>
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label>
+            <input name="published" type="checkbox" value="y"{% if entry.published %} checked="checked"{% endif %}> Published?
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button class="btn btn-primary" type="submit">{% block save_button %}Create{% endblock %}</button>
+        <a class="btn btn-default" href="{{ url_for('index') }}">Cancel</a>
+      </div>
+    </div>
+  </form>
+
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="{{ url_for('static', filename='js/ace.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap-markdown-editor.js') }}"></script>
+  <script type="text/javascript">
+   jQuery(document).ready(function($) {
+
+     $('#myEditor').markdownEditor({
+       imageUpload: true,
+       fullscreen: false,
+       preview: false,
+       uploadPath: '/upload',
+       onPreview: function (content, callback) {
+         callback( marked(content) );
+       }
+     });
+
+
+   });
+  </script>
+{% endblock %}

@@ -1,0 +1,37 @@
+#search-form .form-control{
+    height: 18px;
+    font-size: 10px;
+
+}
+
+#search-form .btn {
+    height: 18px;
+    font-size: 10px;
+    padding: 0px 25px;
+    color: white;
+    border-color: white;
+}
+
+#alertBar {
+    position: fixed;
+    bottom: 5px;
+    left:2%;
+    right:2%;
+    width: 96%;
+    z-index:1;
+}
+
+#alertBar p {
+    margin: 0 auto;
+}
+
+#alertBar .alert {
+    color: black;
+    background-color: rgba(157, 162, 163, 0.87);
+    border-color: rgba(157, 162, 163, 0.87);
+    margin-bottom: 0;
+}
+
+#detailContent p>img {
+    max-width: 600px;
+}
