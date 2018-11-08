@@ -1,0 +1,4 @@
+#!/bin/sh
+
+#python3 app/app.py runserver
+/bin/bash

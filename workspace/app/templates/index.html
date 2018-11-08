@@ -10,7 +10,7 @@
     <div class="col-lg-9 col-md-10 mx-auto">
       {% for entry in object_list %}
         {% if search %}
-          {% set entry = entry.entry %}
+           {% set entry = entry.entry %}
         {% endif %}
         <div class="post-preview">
           <a href="{% if entry.published %}{{ url_for('detail', slug=entry.slug) }}{% else %}{{ url_for('edit', slug=entry.slug) }}{% endif %}">

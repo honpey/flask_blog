@@ -1,0 +1,25 @@
+version: "3"
+services:
+  flask:
+    image: flask-blog
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
+    volumes:
+      - ./workspace:/workspace
+    stdin_open: true
+    tty: true
+    links:
+      - db
+  db:
+    image: mysql
+    volumes:
+      - ./database:/database
+    environment:
+      MYSQL_DATABASE: fts
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "33060:3306"
+    command: --init-file /database/init.sql

@@ -13,7 +13,6 @@ from micawber import bootstrap_basic, parse_html
 from micawber.cache import Cache as OEmbedCache
 from peewee import *
 from playhouse.flask_utils import FlaskDB, get_object_or_404, object_list
-from playhouse.sqlite_ext import *
 
 APP_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -21,9 +20,10 @@ APP_DIR = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__)
 app.config.from_pyfile('app.default_config')
 
+mysql_db = MySQLDatabase('fts', user='root', password='test', host='db', port=3306)
 # FlaskDB is a wrapper for a peewee database that sets up pre/post-request
 # hooks for managing database connections.
-flask_db = FlaskDB(app)
+flask_db = FlaskDB(app, mysql_db)
 
 # The `database` is the actual peewee database, as opposed to flask_db which is
 # the wrapper.
@@ -73,7 +73,7 @@ class Entry(flask_db.Model):
         # allow us to use SQLite's awesome full-text search extension to
         # search our entries.
         query = (FTSEntry
-                 .select(FTSEntry.docid, FTSEntry.entry_id)
+                 .select(FTSEntry.entry_id)
                  .where(FTSEntry.entry_id == self.id))
         try:
             fts_entry = query.get()
@@ -107,22 +107,22 @@ class Entry(flask_db.Model):
         # search query, then join the actual Entry data on the matching
         # search result.
         return (FTSEntry
-                .select(FTSEntry, Entry,
-                        FTSEntry.rank().alias('score'))
+                .select(FTSEntry, Entry)
                 .join(Entry, on=(FTSEntry.entry_id == Entry.id).alias('entry'))
                 .where(
                 (Entry.published == True) and
-                (FTSEntry.match(search)))
-            .order_by(SQL('score').desc()))
+                (FTSEntry.match(search))))
 
 
-
-class FTSEntry(FTSModel):
+class FTSEntry(Model):
     entry_id = IntegerField(Entry)
     content = TextField()
 
     class Meta:
         database = database
+
+    def match(search):
+        return True
 
 def login_required(fn):
     @functools.wraps(fn)
@@ -162,6 +162,7 @@ def index():
     search_query = request.args.get('q')
     if search_query:
         query = Entry.search(search_query)
+        print(query, search_query)
     else:
         query = Entry.public().order_by(Entry.timestamp.desc())
 

@@ -1,6 +1,8 @@
 flask
 peewee
 pygments
+pymysql
 markdown
 micawber
 beautifulsoup4
+MySQL-connector-python

@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 MAINTAINER      Koren He "korenhe@outlook.com"
 COPY env/sources.list /etc/apt/
 RUN apt-get update -u
