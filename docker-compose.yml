@@ -13,7 +13,7 @@ services:
     links:
       - db
   db:
-    image: mysql
+    image: mysql:latest
     volumes:
       - ./database:/database
     environment:

@@ -14,6 +14,25 @@ from micawber.cache import Cache as OEmbedCache
 from peewee import *
 from playhouse.flask_utils import FlaskDB, get_object_or_404, object_list
 
+from pymysql.converters import conversions
+
+def escape_match_against(value, mapping=None):
+    return u"%s" % value.translate()
+
+class Match_Expression(object):
+    def __init__(self, lhs, op, rhs, flat=False):
+        self.lhs = lhs
+        self.op = op
+        self.rhs = rhs
+        self.flat = flat
+
+    def translate(self):
+        # this is hard code SQL statement
+        # t1 stands for the 'ftsentry' table
+        # TODO: rhs may be a list or str
+        return "match (`t1`.`content`) against (\"{}\" in boolean mode)".format(self.rhs)
+
+conversions[Match_Expression] = escape_match_against
 APP_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # Create a Flask WSGI app and configure it using values from the module.
@@ -84,6 +103,8 @@ class Entry(flask_db.Model):
             force_insert = False
 
         fts_entry.content = '\n'.join((self.title, self.content))
+
+        # if content changed, then save, otherwise
         fts_entry.save(force_insert=force_insert)
 
     @classmethod
@@ -109,20 +130,19 @@ class Entry(flask_db.Model):
         return (FTSEntry
                 .select(FTSEntry, Entry)
                 .join(Entry, on=(FTSEntry.entry_id == Entry.id).alias('entry'))
-                .where(
-                (Entry.published == True) and
-                (FTSEntry.match(search))))
-
+                .where((Entry.published == True) and (FTSEntry.match(search))))
 
 class FTSEntry(Model):
-    entry_id = IntegerField(Entry)
+    entry_id = IntegerField(Entry, primary_key=True)
     content = TextField()
 
     class Meta:
         database = database
+        primary_key = False
 
-    def match(search):
-        return True
+    @classmethod
+    def match(cls, search):
+        return Match_Expression(cls._meta.entity, "MATCH", search)
 
 def login_required(fn):
     @functools.wraps(fn)
@@ -162,7 +182,6 @@ def index():
     search_query = request.args.get('q')
     if search_query:
         query = Entry.search(search_query)
-        print(query, search_query)
     else:
         query = Entry.public().order_by(Entry.timestamp.desc())
 
@@ -269,6 +288,10 @@ def allowed_file(filename):
 
 def main():
     database.create_tables([Entry, FTSEntry], safe=True)
+    ret = database.execute_sql("select count(*) from information_schema.statistics where table_name='ftsentry' and index_name='ftsentry_content1' and table_schema='fts';")
+    exist = ret.fetchone()[0]
+    if not exist:
+        database.execute_sql("CREATE FULLTEXT INDEX ftsentry_content1 ON ftsentry (content);")
     app.jinja_env.auto_reload = True
     app.run(host='0.0.0.0', debug=True)
 
